@@ -1,0 +1,340 @@
+package test;
+
+import java.util.*;
+
+class Material {
+    String name;
+    int quantity;
+
+    public Material(String name, int quantity) {
+        this.name = name;
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (Quantity: " + quantity + ")";
+    }
+}
+
+class Bom {
+    Map<String, List<Material> > bomData = new HashMap<>();
+
+    public void addProduct(String productName, List<Material> materials) {
+        bomData.put(productName, materials);
+    }
+
+    public List<Material> getMaterialsForProduct(String productName) {
+        return bomData.getOrDefault(productName, new ArrayList<>());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("BOM: \n");
+        for (Map.Entry<String, List<Material> > e : bomData.entrySet()) {
+            sb.append(e.getKey()).append(": ").append(e.getValue()).append("\n");
+        }
+        return sb.toString();
+    }
+}
+
+class ProductionOrder {
+    String productName;
+    int quantity;
+
+    public ProductionOrder(String productName, int quantity) {
+        this.productName = productName;
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Production Order: " + productName + " (Quantity: " + quantity + ")";
+    }
+}
+
+class Inventory {
+    Map<String, Integer> materials = new HashMap<>();
+
+    public void addMaterial(Material material) {
+        materials.put(material.name, materials.getOrDefault(material.name, 0) + material.quantity);
+    }
+
+    public boolean checkMaterialAvailability(Bom bom, ProductionOrder order) {
+        return checkMaterialAvailabilityRecursive(bom, order.productName, order.quantity);
+    }
+
+    private boolean checkMaterialAvailabilityRecursive(Bom bom, String productName, int quantity) {
+        List<Material> materialsNeeded = bom.getMaterialsForProduct(productName);
+        for (Material material : materialsNeeded) {
+            int requiredQuantity = material.quantity * quantity;
+            int availableQuantity = materials.getOrDefault(material.name, 0);
+
+            if (availableQuantity < requiredQuantity) {
+                // If current material is insufficient, recursively check material requirements of its subcomponents
+                if (!(bom.getMaterialsForProduct(material.name).isEmpty()) &&
+                        checkMaterialAvailabilityRecursive(bom, material.name, requiredQuantity - availableQuantity)) {
+                    // If the material requirements of subcomponents can be met, consider the current material sufficient
+                    continue;
+                }
+                System.out.println("Insufficient inventory: " + material.name);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void consumeMaterials(Bom bom, ProductionOrder order) {
+        consumeMaterialsRecursive(bom, order.productName, order.quantity);
+    }
+
+    private void consumeMaterialsRecursive(Bom bom, String productName, int quantity) {
+        List<Material> materialsNeeded = bom.getMaterialsForProduct(productName);
+        for (Material material : materialsNeeded) {
+            int requiredQuantity = material.quantity * quantity;
+            int availableQuantity = materials.getOrDefault(material.name, 0);
+
+            if (availableQuantity >= requiredQuantity) {
+                // If current material is sufficient, consume directly
+                materials.put(material.name, availableQuantity - requiredQuantity);
+            } else {
+                // If current material is insufficient, consume all available inventory first
+                materials.put(material.name, 0);
+                int remainingQuantity = requiredQuantity - availableQuantity;
+
+                // Recursively consume materials of subcomponents
+                if (!(bom.getMaterialsForProduct(material.name).isEmpty())) {
+                    consumeMaterialsRecursive(bom, material.name, remainingQuantity);
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Inventory: \n");
+        for (Map.Entry<String, Integer> e : materials.entrySet()) {
+            sb.append(e.getKey()).append(": ").append(e.getValue()).append("\n");
+        }
+        return sb.toString();
+    }
+}
+
+class SubComponentProduction {
+    boolean completed;
+    boolean succeeded;
+
+    public SubComponentProduction(String name, int quantity) {
+        completed = false;
+        succeeded = false;
+    }
+
+    public void setCompleted(boolean result) {
+        this.completed = true;
+        this.succeeded = result;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public boolean isSucceeded() {
+        return succeeded;
+    }
+}
+
+class MESSystem {
+    Bom bom;
+    Inventory inventory;
+
+    public MESSystem(Bom bom, Inventory inventory) {
+        this.bom = bom;
+        this.inventory = inventory;
+    }
+
+    public void getERPPlan() {
+        System.out.println("Get ERP plan");
+    }
+
+    public ProductionOrder generateProductionOrder() {
+        System.out.println("Automatically manage and update to generate FO based on rules");
+        return new ProductionOrder("Airplane", 1);
+    }
+
+    public boolean needMaterialPreparation(ProductionOrder order) {
+        System.out.println("Need material preparation? (Y/N)");
+        // Here you can determine whether material preparation is needed based on actual situation, simplified here, directly return true
+        return true;
+    }
+
+    public void checkMaterialRules() {
+        System.out.println("Verify and check material rules (e.g., material validity period, quality standards, etc.)");
+    }
+
+    public void calculateMaterialBasedOnBomAndFO(ProductionOrder order) {
+        System.out.println("Check customization on BOM and FO, calculate actual required materials");
+        System.out.println(order);
+        System.out.println(bom);
+    }
+
+    public void generateMaterialRequirementPlan(ProductionOrder order) {
+        System.out.println("Generate material requirement plan based on BOM and production order");
+        List<Material> requiredMaterials = bom.getMaterialsForProduct(order.productName);
+        System.out.println("Material Requirement Plan:");
+        for (Material material : requiredMaterials) {
+            System.out.println("- " + material.name + ": " + (material.quantity * order.quantity));
+        }
+    }
+
+    public void generateProductionPlan() {
+        System.out.println("Develop specialized factory plan (e.g., production scheduling, process flow, etc.)");
+    }
+
+    public void deliverMaterial() {
+        System.out.println("Material reception, update inventory");
+    }
+
+    public void distributeMaterial() {
+        System.out.println("Distribute materials according to production plan");
+    }
+
+    public void runProduction(ProductionOrder order) {
+        System.out.println("Start production of " + order.productName + " x " + order.quantity);
+        boolean result = runProductionRecursive(order.productName, order.quantity);
+        if (result) {
+            System.out.println(order.productName + " x " + order.quantity + " production completed!");
+        } else {
+            System.out.println(order.productName + " x " + order.quantity + " production failed, program exits!");
+            System.exit(1);
+        }
+    }
+
+    private boolean runProductionRecursive(String productName, int quantity) {
+        System.out.println("Checking material requirements for " + productName + "...");
+        if (!inventory.checkMaterialAvailability(bom, new ProductionOrder(productName, quantity))) {
+            System.out.println("Insufficient materials for " + productName + ", cannot produce!");
+            return false;
+        }
+
+        List<Material> materialsNeeded = bom.getMaterialsForProduct(productName);
+        List<SubComponentProduction> subComponentProductions = new ArrayList<>();
+
+        for (Material material : materialsNeeded) {
+            int requiredQuantity = material.quantity * quantity;
+            System.out.println("Need " + material.name + " x " + requiredQuantity);
+
+            if (!(bom.getMaterialsForProduct(material.name).isEmpty())) {
+                System.out.println("Start producing subcomponent " + material.name + " x " + requiredQuantity + " for " + productName);
+
+                SubComponentProduction subProduction = new SubComponentProduction(material.name, requiredQuantity);
+                subComponentProductions.add(subProduction);
+
+                Thread t = new Thread(() -> {
+                    boolean result = runProductionRecursive(material.name, requiredQuantity);
+                    System.out.println("Subcomponent " + material.name + " x " + requiredQuantity +
+                            (result ? " production completed" : " production failed") + ", for " + productName);
+                    subProduction.setCompleted(result);
+                });
+                t.start();
+            }
+        }
+
+        while (!allSubComponentsCompleted(subComponentProductions)) {
+            System.out.println(productName + " waiting for subcomponents to complete production...");
+            Thread.yield();
+        }
+
+        if (!allSubComponentsSucceeded(subComponentProductions)) {
+            System.out.println("A subcomponent of " + productName + " failed to produce, cannot continue production!");
+            return false;
+        }
+
+        inventory.consumeMaterials(bom, new ProductionOrder(productName, quantity));
+        System.out.println("Consume materials, produce " + productName + " x " + quantity);
+        inventory.addMaterial(new Material(productName, quantity));
+        return true;
+    }
+
+    private boolean allSubComponentsCompleted(List<SubComponentProduction> subComponentProductions) {
+        for (SubComponentProduction subProduction : subComponentProductions) {
+            if (!subProduction.isCompleted()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean allSubComponentsSucceeded(List<SubComponentProduction> subComponentProductions) {
+        for (SubComponentProduction subProduction : subComponentProductions) {
+            if (!subProduction.isSucceeded()) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+public class MES {
+    public void main() {
+        // Initialize BOM
+        Bom bom = new Bom();
+        bom.addProduct("Airplane", List.of(
+                new Material("Fuselage", 1),
+                new Material("Wing", 2),
+                new Material("Engine", 2)
+        ));
+        bom.addProduct("Fuselage", List.of(
+                new Material("Aluminum Alloy Sheet", 100),
+                new Material("Rivet", 1000)
+        ));
+        bom.addProduct("Wing", List.of(
+                new Material("Carbon Fiber Composite", 50),
+                new Material("Hydraulic System", 1)
+        ));
+        bom.addProduct("Engine", List.of(
+                new Material("Titanium Alloy", 20),
+                new Material("Turbine Blade", 20)
+        ));
+        bom.addProduct("Aluminum Alloy Sheet", List.of(
+                new Material("Aluminum Alloy", 10)
+        ));
+
+        // Initialize inventory
+        Inventory inventory = new Inventory();
+        inventory.addMaterial(new Material("Aluminum Alloy Sheet", 1000));
+        inventory.addMaterial(new Material("Rivet", 10000));
+        inventory.addMaterial(new Material("Carbon Fiber Composite", 500));
+        inventory.addMaterial(new Material("Hydraulic System", 10));
+        inventory.addMaterial(new Material("Titanium Alloy", 200));
+        inventory.addMaterial(new Material("Turbine Blade", 200));
+        inventory.addMaterial(new Material("Aluminum Alloy", 2000));
+
+        // Create MES system instance
+        MESSystem mes = new MESSystem(bom, inventory);
+
+        // Simulate MES system process
+        mes.getERPPlan();
+        ProductionOrder order = mes.generateProductionOrder();
+
+        if (mes.needMaterialPreparation(order)) {
+            mes.checkMaterialRules();
+            mes.calculateMaterialBasedOnBomAndFO(order);
+            mes.generateMaterialRequirementPlan(order);
+            mes.generateProductionPlan();
+            mes.deliverMaterial();
+            mes.distributeMaterial();
+        }
+        mes.runProduction(order);
+
+        System.out.println("Production completed, remaining inventory is:");
+        System.out.println(inventory);
+    }
+}
+
+
+int main()
+{
+    MES mes = new MES();
+    mes.main();
+    return 0;
+}
