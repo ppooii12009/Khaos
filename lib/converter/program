@@ -1,0 +1,37 @@
+class Book
+{
+    int count;
+    int price=100;
+    double price2 = -3.88*5.0;
+    Book()
+    {}
+    Book(int x, bool y)
+    {}
+    public static int getPrice()
+    {
+        System.out.println(1235+ 13);
+        return 15;
+    }
+}
+
+class Test
+{
+    void FV(int a, String ss)
+    {
+        Map<int,String> mp = new HashMap<>();
+        mp.put(3,"Three");
+        String value = mp.get(3);
+        List<String> lst;
+        Set<List<String> > st;
+        int[] ir = new int[10];
+        Book[][] br;
+        int a_copy = 9;
+        String ss_copy = "123";
+        int count = Book.getPrice();
+        return ;
+    }
+    static String FS()
+    {
+        return "999";
+    }
+}
