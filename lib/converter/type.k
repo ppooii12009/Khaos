@@ -4,7 +4,8 @@ module TYPE-SYNTAX
 // Types
 syntax BasicType ::= "void" | "boolean" | "String"
                     | "byte" | "short" | "int" | "long"
-                    | "float" | "double"
+                    | "float" | "double" | "Integer" | "Long"
+                    | "Float" | "Double"
 
 syntax ContainerType ::= "List" "<" Type ">"
                     | "Map" "<" Type "," Type ">"
@@ -35,6 +36,10 @@ rule convertType(int) => "int32"
 rule convertType(long) => "int64"
 rule convertType(float) => "real"
 rule convertType(double) => "real"
+rule convertType(Integer) => "int32"
+rule convertType(Long) => "int64"
+rule convertType(Float) => "real"
+rule convertType(Double) => "real"
 // Used for user-defined classes
 rule convertType(T:Id) => Id2String(T)
 
