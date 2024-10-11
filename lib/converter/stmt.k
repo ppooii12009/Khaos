@@ -137,7 +137,7 @@ rule convertStmt(T:Type F:Id ( Ps:Parameters ) B:Block, M:Map) =>
     #then "" 
     #else " returns ( RES__: " +String convertType(T) +String " )"
     #fi
-    +String "\n\tdecreases *"
+    +String "\n\tdecreases *\n\tmodifies this"
     +String convertStmt(B, M)
 
 rule convertStmt(C:Id ( Ps:Parameters ) B:Block, M:Map) =>
