@@ -54,8 +54,4 @@ This repository supports static code verification by converting the relevant cod
 
 After converting, you can manually use Dafny to verify the generated Dafny code in `result.dfy` file.
 
-## Contact
-
-If you have any questions or feedback, please open an issue.
-
 ---
