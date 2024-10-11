@@ -30,19 +30,32 @@ You can perform dynamic execution with the following steps:
 
    - `-cSEED=99`: Sets the random seed to 99.
    - `--output-file output.txt`: Outputs the result to the file `output.txt`.
+  
+   After executing the commands, you can view the program's configuration details in the `output.txt` file located in the current directory.
 
 ### 2. Static Verification with Dafny
 
-This repository also supports static code verification using [Dafny](https://dafny.org/). You can find the steps and guidance for static verification in the relevant directories or documentation within this repository.
+This repository supports static code verification by converting the relevant code to equivalent Dafny code using the K Framework, followed by manual verification with Dafny. Follow these steps to perform static verification:
 
-## Contribution
+1. Navigate to the `Khaos/lib/converter` directory:
+   ```bash
+   cd Khaos/lib/converter
+   ```
 
-Contributions and suggestions are welcome! Please feel free to submit issues and pull requests to help improve the code.
+2. Compile the `java.k` file:
+   ```bash
+   kompile java.k
+   ```
+
+3. Execute the conversion:
+   ```bash
+   krun program
+   ```
+
+After converting, you can manually use Dafny to verify the generated Dafny code in `result.dfy` file.
 
 ## Contact
 
-If you have any questions or feedback, please contact us at [your-email@example.com](mailto:your-email@example.com).
+If you have any questions or feedback, please open an issue.
 
 ---
-
-Be sure to replace `<repository-url>` and `<repository-name>` with your actual repository link and name to ensure users can clone and use your repository seamlessly. Adjust or supplement other specific information according to your needs.
