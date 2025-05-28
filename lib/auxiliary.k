@@ -78,6 +78,7 @@ syntax Int ::= getPureAddress(KItem)                    [function]
 
 syntax Map ::= convertToMap(KItem)                      [function]
                 | Int "..." Int "|->" K                 [function]
+                | clearThreadBlock(Int, Map)            [function]
 
 syntax Stmt ::= "forcePrint" "(" Exps ")" ";"              [seqstrict]
                 | "forcePrintln" "(" Exps ")" ";"            [macro]
@@ -143,6 +144,12 @@ rule freshThreadId(I:Int) => I +Int 1
 
 rule N...M |-> _ => .Map  requires N >Int M
 rule N...M |-> K => N |-> K (N +Int 1)...M |-> K  requires N <=Int M
+
+
+rule clearThreadBlock(_:Int, .Map) => .Map
+
+rule clearThreadBlock(ThreadIdToRemove:Int, (ThreadIdKey:Int |-> BlockSet:Set) RestMap:Map) 
+    => (ThreadIdKey |-> BlockSet -Set SetItem(ThreadIdToRemove)) clearThreadBlock(ThreadIdToRemove, RestMap)
 
 rule    {} => .K
 rule    <k> { S } => S ~> setEnv(Env) ... </k>  
