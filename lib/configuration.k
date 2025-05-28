@@ -116,6 +116,9 @@ configuration <T color="red">
                         <ready color="blue"> SetItem(0):Set </ready>
                         // The set of all suspended thread IDs
                         <suspended color="yellow"> .Set </suspended>
+                        // The map of blocked threads to the set of threads blocking them.
+                        // If the value is empty set, that means the corresponding thread is not blocked
+                        <blockMap> 0 |-> .Set </blockMap>
                         // Seed used for random algorithm
                         <seed> $SEED:Int </seed>
                         // Counter for regularly scheduling threads
