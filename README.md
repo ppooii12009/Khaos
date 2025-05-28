@@ -1,5 +1,5 @@
 # Khaos
-This repository contains the code implementation for the paper titled [Khaos: A K Framework-based Approach to Simulation and Verification]. 
+This repository contains the code implementation for the paper titled [Khaos: A Formal Verification Practice Method based on K Framework]. 
 The implementation offers two primary functions: dynamic execution and static code verification using Dafny.
 
 ## Prerequisites
