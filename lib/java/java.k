@@ -54,6 +54,7 @@ syntax Stmt ::= AccessModifier "class" Id Block           [macro]
             | "Thread.yield()" ";"  
             | "Thread" Id "=" "new Thread" "(" Lambda ")" ";"
             | Id "." "start()" ";"
+            | Id "." "join()" ";"
 
 syntax PackagePath ::= Id
                 | PackagePath "." Id
@@ -283,5 +284,37 @@ rule    <k> X:Id . start() ; => .K ... </k>
         <ready> RSet => RSet |Set SetItem(SonThreadId) </ready>
         <counter> Cnt => Cnt +Int 1 </counter>
         <deadCounter> _ => 0 </deadCounter>
+
+// join thread
+rule    <k> X:Id . join() ; => .K ... </k>
+        <env> ... X |-> address(A) ... </env>
+        <store> 
+            ... 
+                A |-> thread(TargetThreadId:Int, _, _)
+            ... 
+        </store>
+        <id> CurrentThreadId:Int </id>
+        <running> ... SetItem(CurrentThreadId) => .Set ... </running>
+        <terminated> TerminatedSet:Set </terminated>
+        <ready> ... SetItem(CurrentThreadId) => .Set ... </ready>
+        <suspended> ... .Set => SetItem(CurrentThreadId) ... </suspended>
+        <counter> Cnt => Cnt +Int 1 </counter>
+        <blockMap>
+            ... CurrentThreadId |-> (BlockSet:Set => BlockSet |Set SetItem(TargetThreadId)) ...
+        </blockMap>
+        requires notBool TargetThreadId in TerminatedSet
+
+rule    <k> X:Id . join() ; => .K ... </k>
+        <env> ... X |-> address(A) ... </env>
+        <store> 
+            ... 
+                A |-> thread(TargetThreadId:Int, _, _)
+            ... 
+        </store>
+        <id> CurrentThreadId:Int </id>
+        <running> SetItem(CurrentThreadId) _:Set </running>
+        <terminated> TerminatedSet:Set </terminated>
+        <counter> Cnt => Cnt +Int 1 </counter>
+        requires TargetThreadId in TerminatedSet
 
 endmodule
