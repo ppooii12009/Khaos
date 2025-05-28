@@ -5,11 +5,11 @@ module SPECIFICATION-SYNTAX
     imports DOMAINS-SYNTAX
     imports EXP-SYNTAX
 
-syntax Require ::= "requires" Exp                       [strict]
+syntax Require ::= "requires" Exp                      
 syntax Requires ::= List{Require,""}
-syntax Ensure ::= "ensures" Exp                         [strict]
+syntax Ensure ::= "ensures" Exp                         
 syntax Ensures ::= List{Ensure,""}
-syntax Invariant ::= "invariant" Exp                    [strict]
+syntax Invariant ::= "invariant" Exp                   
 syntax Invariants ::= List{Invariant,""}
 syntax Specification ::= Require
                 | Ensure
