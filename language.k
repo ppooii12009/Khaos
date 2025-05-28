@@ -228,6 +228,7 @@ rule    <thread>
             ...
         </thread>
         <ready> RSet => RSet |Set SetItem(TID) </ready>
+        <blockMap> ... TID |-> .Set ... </blockMap>
 
 rule    <thread>
                 ...
@@ -250,10 +251,17 @@ rule    <thread>
         <counter> Cnt => Cnt +Int 1 </counter>
         <deadCounter> _ => 0 </deadCounter>
 
-rule    (<thread> ... <k> .K </k> <id> T </id> ... </thread> => .Bag)
+rule    (<thread> ... <k> .K </k> <id> T:Int </id> ... </thread> => .Bag)
         <terminated> ... .Set => SetItem(T) ... </terminated>
         <ready> RSet => RSet -Set SetItem(T) </ready>
         <running> RSet' => RSet' -Set SetItem(T) </running>
+        <blockMap> BlockMap => clearThreadBlock(T, BlockMap) </blockMap>
+
+// Wake up blocked thread after its blocking condition is cleared
+rule    <ready> ReadySet:Set => ReadySet |Set SetItem(TID) </ready>
+        <suspended> ... SetItem(TID:Int) => .Set ... </suspended>
+        <blockMap> ... TID |-> .Set ... </blockMap>
+        requires notBool TID in ReadySet
 
 /** Generate the next pseudo-random number using the linear congruential generator (LCG)
     The random number is generated as `(a * seed + c) % m`
@@ -272,7 +280,7 @@ rule    <running> .Set => SetItem(Set2List(RSet)[
         requires size(RSet) >Int 0
 
 // Randomly schedule
-rule    <running> SetItem(TId:Int) => SetItem(Set2List(RSet)[
+rule    <running> SetItem(_:Int) => SetItem(Set2List(RSet)[
             (1664525 *Int Seed +Int 1013904223) %Int 2147483648 %Int size(RSet)
             ])  
         </running>
