@@ -1,16 +1,19 @@
 # Khaos
-This repository contains the code implementation for the paper titled [Khaos: A Formal Verification Practice Method based on K Framework]. 
-The implementation offers two primary functions: dynamic execution and static code verification using Dafny.
+This repository contains the code implementation for the paper titled [Towards Integrated Formal Methods: Khaos, A LaaS-FaaS based Solution]. 
+The implementation offers a proof-of-concept of the proposed solution in the paper. Test codes are also included.
+
+<img width="803" height="458" alt="image" src="https://github.com/user-attachments/assets/440a11d2-8ef6-434f-8107-9d1f33176450" />
 
 ## Prerequisites
 
 Before proceeding, make sure you have the [K Framework](https://github.com/runtimeverification/k) installed on your system. Follow the instructions in the repository to set it up.
+Also, we recommend to install [Dafny](https://dafny.org/latest/Installation) for running the generated Dafny codes.
 
-## Features
+## How To Run PoC Test Codes
 
-### 1. Dynamic Execution
+### 1. Positive Test Codes 
 
-You can perform dynamic execution with the following steps:
+#### You can perform the positive test with the following steps:
 
 1. Clone this repository to your local machine:
    ```bash
@@ -23,9 +26,9 @@ You can perform dynamic execution with the following steps:
    kompile language.k
    ```
 
-3. Run the following command to execute codes in `MES` file dynamically:
+3. Run the following command to execute codes in `Positive_MES` file dynamically:
    ```bash
-   krun MES -cSEED=99 --output-file output.txt
+   krun Positive_MES -cSEED=99 --output-file output.txt
    ```
 
    - `-cSEED=99`: Sets the random seed to 99.
@@ -33,12 +36,13 @@ You can perform dynamic execution with the following steps:
   
    After executing the commands, you can view the program's configuration details in the `output.txt` file located in the current directory.
 
-### 2. Static Verification with Dafny
+4. Run the codes in `Positive_MES.java` in your installed JAVA IDE. Compare the output result with the result in Step 3.
 
-This repository supports static code verification by converting the relevant code to equivalent Dafny code using the K Framework, followed by manual verification with Dafny. Follow these steps to perform static verification:
+#### For code transformation mechanism test, follow the steps below:
 
-1. Navigate to the `Khaos/lib/converter` directory:
+1. Clone this repository to your local machine:
    ```bash
+   git clone https://github.com/ppooii12009/Khaos.git
    cd Khaos/lib/converter
    ```
 
@@ -46,12 +50,36 @@ This repository supports static code verification by converting the relevant cod
    ```bash
    kompile java.k
    ```
-
-3. Execute the conversion:
+   
+3. Run the following command to transform JAVA codes to Dafny codes in `program` file:
    ```bash
    krun program
    ```
+  
+   After executing the commands, you can find the generated file `result.dfy` in current directory.
 
-After converting, you can manually use Dafny to verify the generated Dafny code in `result.dfy` file.
+### 2. Negative Test Codes
+
+You can perform the negative test with the following steps:
+
+1. Clone this repository to your local machine:
+   ```bash
+   git clone https://github.com/ppooii12009/Khaos.git
+   cd Khaos
+   ```
+
+2. Compile the `language.k` file:
+   ```bash
+   kompile language.k
+   ```
+
+3. Run the following command to execute codes in `Negative_MES` file:
+   ```bash
+   krun Negative_MES -cSEED=99 --output-file output.txt
+   ```
+
+   After the execution, check the console output in `output.txt` and find the value of conflict count.
+
+4. Run the codes in `Negative_MES.java` in your installed JAVA IDE. Check the console output and compare them with the result in Step 3.
 
 ---
